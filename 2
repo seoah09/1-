@@ -1,0 +1,32 @@
+import pandas as pd
+import streamlit as st
+
+DATA_URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/seoul.csv"
+
+# 데이터 불러오기
+df = pd.read_csv(DATA_URL, encoding="utf-8-sig")
+
+# 평균기온을 숫자로 변환
+df["평균기온"] = pd.to_numeric(df["평균기온"], errors="coerce")
+
+# 결측치 제거
+temperatures = df["평균기온"].dropna()
+
+# 화면
+st.title("서울 일별 평균기온 분포")
+
+st.write(
+    "서울의 일별 평균기온이 어떤 온도 구간에 "
+    "얼마나 많이 나타났는지 보여주는 히스토그램입니다."
+)
+
+# 히스토그램
+st.bar_chart(
+    pd.cut(
+        temperatures,
+        bins=range(-20, 41, 2)
+    ).value_counts().sort_index(),
+    x_label="평균기온 구간",
+    y_label="일수",
+    height=500
+)
