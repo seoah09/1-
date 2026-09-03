@@ -1,0 +1,40 @@
+import pandas as pd
+import streamlit as st
+import matplotlib.pyplot as plt
+
+DATA_URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/seoul.csv"
+
+# 데이터 불러오기
+df = pd.read_csv(DATA_URL, encoding="utf-8-sig")
+
+# 기온 데이터를 숫자로 변환
+df["최저기온"] = pd.to_numeric(df["최저기온"], errors="coerce")
+df["최고기온"] = pd.to_numeric(df["최고기온"], errors="coerce")
+
+# 결측치 제거
+df = df.dropna(subset=["최저기온", "최고기온"])
+
+# 산점도
+fig, ax = plt.subplots(figsize=(9, 7))
+
+ax.scatter(
+    df["최저기온"],
+    df["최고기온"],
+    alpha=0.3,
+    s=12,
+    color="#E45756"
+)
+
+ax.set_title("서울 일별 최저기온과 최고기온의 관계")
+ax.set_xlabel("최저기온 (°C)")
+ax.set_ylabel("최고기온 (°C)")
+
+ax.grid(alpha=0.25)
+
+st.title("서울 일별 최저기온과 최고기온")
+st.write(
+    "각 점은 하루를 나타냅니다. "
+    "최저기온이 높을수록 최고기온도 높아지는 경향이 있는지 확인할 수 있습니다."
+)
+
+st.pyplot(fig)
